@@ -1,0 +1,22 @@
+{
+    "name": "panlatent/yii2-setting",
+    "description": "Site setting extension",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension","setting"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Panlatent",
+            "email": "panlatent@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "panlatent\\setting\\": "src/"
+        }
+    }
+}
