@@ -7,7 +7,7 @@ use yii\base\Object;
 
 class Rule extends Object
 {
-    public function validate()
+    public function validate($setting)
     {
         return true;
     }

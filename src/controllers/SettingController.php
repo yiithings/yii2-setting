@@ -1,10 +1,15 @@
 <?php
 
-
 namespace panlatent\setting\controllers;
 
+use yii\web\Controller;
 
-class SettingController
+/**
+ * Manages application settings.
+ *
+ * @package panlatent\setting\controllers
+ */
+class SettingController extends Controller
 {
 
 }
