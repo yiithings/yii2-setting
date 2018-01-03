@@ -1,10 +1,10 @@
 Yii2 Setting
 ============
-[![Build Status](https://travis-ci.org/panlatent/yii2-setting.svg)](https://travis-ci.org/panlatent/yii2-setting)
-[![Latest Stable Version](https://poser.pugx.org/panlatent/yii2-setting/v/stable.svg)](https://packagist.org/packages/panlatent/yii2-setting) 
-[![Total Downloads](https://poser.pugx.org/panlatent/yii2-setting/downloads.svg)](https://packagist.org/packages/panlatent/yii2-setting) 
-[![Latest Unstable Version](https://poser.pugx.org/panlatent/yii2-setting/v/unstable.svg)](https://packagist.org/packages/panlatent/yii2-setting)
-[![License](https://poser.pugx.org/panlatent/yii2-setting/license.svg)](https://packagist.org/packages/panlatent/yii2-setting)
+[![Build Status](https://travis-ci.org/yiithings/yii2-setting.svg)](https://travis-ci.org/yiithings/yii2-setting)
+[![Latest Stable Version](https://poser.pugx.org/yiithings/yii2-setting/v/stable.svg)](https://packagist.org/packages/yiithings/yii2-setting) 
+[![Total Downloads](https://poser.pugx.org/yiithings/yii2-setting/downloads.svg)](https://packagist.org/packages/yiithings/yii2-setting) 
+[![Latest Unstable Version](https://poser.pugx.org/yiithings/yii2-setting/v/unstable.svg)](https://packagist.org/packages/yiithings/yii2-setting)
+[![License](https://poser.pugx.org/yiithings/yii2-setting/license.svg)](https://packagist.org/packages/yiithings/yii2-setting)
 
 Site setting extension
 
@@ -16,13 +16,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist panlatent/yii2-setting "*"
+php composer.phar require --prefer-dist yiithings/yii2-setting "*"
 ```
 
 or add
 
 ```
-"panlatent/yii2-setting": "*"
+"yiithings/yii2-setting": "*"
 ```
 
 to the require section of your `composer.json` file.
