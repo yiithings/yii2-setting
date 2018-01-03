@@ -1,6 +1,6 @@
 <?php
 
-namespace yiithings\setting\console;
+namespace yiithings\setting\commands;
 
 use yiithings\setting\Setting;
 use Yii;

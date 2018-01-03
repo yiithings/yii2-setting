@@ -7,8 +7,5 @@ return [
         ]
     ],
     'controllerMap' => [
-        'setting' => [
-            'class' => 'tests\app\controller\DefaultController'
-        ]
     ],
 ];

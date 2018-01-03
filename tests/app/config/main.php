@@ -16,7 +16,12 @@ $config = [
         'setting' => [
             'class' => 'yiithings\setting\Setting',
         ]
-    ]
+    ],
+    'modules' => [
+        'setting' => [
+            'class' => 'yiithings\setting\Module'
+        ]
+    ],
 ];
 
 return $config;
