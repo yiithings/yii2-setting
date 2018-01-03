@@ -1,5 +1,5 @@
 {
-    "name": "panlatent/yii2-setting",
+    "name": "yiithings/yii2-setting",
     "description": "Site setting extension",
     "type": "yii2-extension",
     "keywords": ["yii2","extension","setting"],
@@ -14,9 +14,20 @@
         "php": ">=5.5.0",
         "yiisoft/yii2": "*"
     },
+    "config": {
+        "fxp-asset": {
+            "installer-paths": {
+                "npm-asset-library": "vendor/npm",
+                "bower-asset-library": "vendor/bower"
+            }
+        }
+    },
     "autoload": {
         "psr-4": {
-            "panlatent\\setting\\": "src/"
+            "yiithings\\setting\\": "src/"
         }
+    },
+    "require-dev": {
+        "yiister/yii2-gentelella": "^1.3"
     }
 }

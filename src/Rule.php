@@ -1,7 +1,7 @@
 <?php
 
 
-namespace panlatent\setting;
+namespace yiithings\setting;
 
 use yii\base\Object;
 

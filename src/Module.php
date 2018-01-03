@@ -1,6 +1,6 @@
 <?php
 
-namespace panlatent\setting;
+namespace yiithings\setting;
 
 use yii\base\BootstrapInterface;
 use yii\console\Application as ConsoleApplication;

@@ -1,9 +1,9 @@
 <?php
 
-namespace panlatent\setting\models;
+namespace yiithings\setting\models;
 
 use InvalidArgumentException;
-use panlatent\setting\Rule;
+use yiithings\setting\Rule;
 
 /**
  * This is the model class for table "setting".

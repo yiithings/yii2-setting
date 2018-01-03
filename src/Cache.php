@@ -1,10 +1,10 @@
 <?php
 
 
-namespace panlatent\setting;
+namespace yiithings\setting;
 
 use yii\base\Component;
-use panlatent\setting\models\Setting as Model;
+use yiithings\setting\models\Setting as Model;
 
 class Cache extends Component implements \Iterator
 {
@@ -52,7 +52,7 @@ class Cache extends Component implements \Iterator
         unset($this->store[$key]);
     }
 
-    public function clear()
+    public function flush()
     {
         $this->store = [];
     }

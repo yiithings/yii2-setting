@@ -1,6 +1,6 @@
 <?php
 
-namespace panlatent\setting\controllers;
+namespace yiithings\setting\controllers;
 
 use yii\web\Controller;
 

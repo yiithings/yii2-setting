@@ -1,8 +1,8 @@
 <?php
 
-namespace panlatent\setting;
+namespace yiithings\setting;
 
-use panlatent\setting\models\Setting as Model;
+use yiithings\setting\models\Setting as Model;
 use Yii;
 use yii\base\Component;
 
@@ -160,7 +160,7 @@ class Setting extends Component
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\db\StaleObjectException
      */
-    public function remove($name, $group)
+    public function remove($name, $group = '')
     {
         if (false === ($model = $this->getModel($name, $group))) {
             return false;

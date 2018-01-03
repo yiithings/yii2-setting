@@ -2,6 +2,7 @@
 
 $config = [
     'id' => 'yii2-setting',
+    'name' => 'Yii2 Setting',
     'basePath' => dirname(__DIR__),
     'vendorPath' => dirname(dirname(dirname(__DIR__))) . '/vendor',
     'components' => [
@@ -13,7 +14,7 @@ $config = [
             'charset' => 'utf8',
         ],
         'setting' => [
-            'class' => 'panlatent\setting\Setting',
+            'class' => 'yiithings\setting\Setting',
         ]
     ]
 ];

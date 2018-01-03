@@ -3,7 +3,7 @@
 return [
     'controllerMap' => [
         'setting' => [
-            'class' => 'panlatent\setting\console\SettingController'
+            'class' => 'yiithings\setting\console\SettingController'
         ]
     ]
 ];

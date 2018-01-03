@@ -1,8 +1,8 @@
 <?php
 
-namespace panlatent\setting\console;
+namespace yiithings\setting\console;
 
-use panlatent\setting\Setting;
+use yiithings\setting\Setting;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\Console;
@@ -30,6 +30,8 @@ class SettingController extends Controller
     }
 
     /**
+     * List all settings.
+     *
      * @throws \yii\base\InvalidConfigException
      */
     public function actionList()
@@ -72,9 +74,28 @@ class SettingController extends Controller
     {
         $success = $this->setting->set($name, $this->prepareValueParam($value));
         if ($success) {
-            $this->stdout("Setting Updated!\n", Console::FG_GREEN);
+            $this->stdout("Setting updated!\n", Console::FG_GREEN);
         } else {
-            $this->stderr("Setting Failed!\n", Console::FG_RED);
+            $this->stderr("Setting failed!\n", Console::FG_RED);
+        }
+    }
+
+    /**
+     * Remove a setting.
+     *
+     * @param string $name
+     * @throws \Exception
+     * @throws \Throwable
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionRemove($name)
+    {
+        $success = $this->setting->remove($name);
+        if ($success) {
+            $this->stdout("Setting removed!\n", Console::FG_GREEN);
+        } else {
+            $this->stderr("Removed failed!\n", Console::FG_RED);
         }
     }
 

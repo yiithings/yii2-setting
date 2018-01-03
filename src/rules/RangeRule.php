@@ -1,10 +1,12 @@
 <?php
 
-namespace panlatent\setting\rules;
+namespace yiithings\setting\rules;
 
-use panlatent\setting\Rule;
+use yiithings\setting\Rule;
 
-class Range extends Rule
+class RangeRule extends Rule
 {
+    public $max = 100;
 
+    public $min = 1;
 }
