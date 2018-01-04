@@ -2,7 +2,7 @@
 
 return [
     'bootstrap' => [
-        'setting-manager'
+        'settings'
     ],
     'controllerMap' => [
     ]

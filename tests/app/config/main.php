@@ -18,7 +18,7 @@ $config = [
         ]
     ],
     'modules' => [
-        'setting-manager' => [
+        'settings' => [
             'class' => 'yiithings\setting\Module'
         ]
     ],
