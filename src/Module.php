@@ -8,8 +8,7 @@ use yiithings\setting\commands\SettingController;
 
 class Module extends \yii\base\Module implements BootstrapInterface
 {
-
-    public $setting = 'setting';
+    public $defaultRoute = 'setting';
 
     public function bootstrap($app)
     {
