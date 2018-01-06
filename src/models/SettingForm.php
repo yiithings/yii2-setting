@@ -60,6 +60,10 @@ class SettingForm extends Setting
      */
     public function setName($name)
     {
+        if ( ! preg_match('#^[a-zA-Z_][a-zA-Z0-9_]*$#', $name)) {
+            throw new InvalidArgumentException("Invalid name argument value: $name");
+        }
+
         $this->setAttribute('name', $name);
     }
 
@@ -78,6 +82,9 @@ class SettingForm extends Setting
     {
         if ($group === null) {
             $group = '';
+        }
+        if ($group !== '' && ! preg_match('#^[a-zA-Z_][a-zA-Z0-9_]*$#', $group)) {
+            throw new InvalidArgumentException("Invalid group argument value: $group");
         }
         $this->setAttribute('group', $group);
     }
