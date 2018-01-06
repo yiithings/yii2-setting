@@ -2,10 +2,11 @@
 
 namespace yiithings\setting\commands;
 
-use yiithings\setting\Setting;
+use InvalidArgumentException;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\Console;
+use yiithings\setting\Setting;
 
 /**
  * Manages application settings.
@@ -15,11 +16,41 @@ use yii\helpers\Console;
  */
 class SettingController extends Controller
 {
+    /**
+     * @var string setting component id.
+     */
     public $settingComponent = 'setting';
+    /**
+     * @var bool whether to set setting with rule.
+     */
+    public $withRule = false;
+    /**
+     * @var string rule class name.
+     */
+    public $class = 'yiithings\setting\Rule';
+    /**
+     * @var string rule label name.
+     */
+    public $label;
+    /**
+     * @var string rule tag name.
+     */
+    public $tag;
+    /**
+     * @var array rule option attribute.
+     */
+    public $options = [];
+    /**
+     * @var string read json and append properties to rule.
+     */
+    public $append;
 
     public function options($actionID)
     {
         switch ($actionID) {
+            case 'set':
+                $options = ['withRule', 'class', 'label', 'tag', 'options', 'append'];
+                break;
             default:
                 $options = [];
         }
@@ -34,11 +65,12 @@ class SettingController extends Controller
      *
      * @throws \yii\base\InvalidConfigException
      */
-    public function actionList()
+    public function actionAll()
     {
         $all = $this->setting->all();
         if (empty($all)) {
             $this->stdout("(empty)\n");
+
             return;
         }
 
@@ -67,16 +99,35 @@ class SettingController extends Controller
      * Set a setting.
      *
      * @param string $name
-     * @param string $value
+     * @param string $value value string use [type]:value set type.
      * @throws \yii\base\InvalidConfigException
      */
     public function actionSet($name, $value)
     {
-        $success = $this->setting->set($name, $this->prepareValueParam($value));
+        $append = ! empty($this->append) ? json_decode($this->append, true) : [];
+        if ( ! is_array($append)) {
+            throw new InvalidArgumentException("Cannot parser append json: {$this->append}");
+        }
+        if ($this->withRule) {
+            $rule = Yii::createObject([
+                'class'   => $this->class,
+                'label'   => $this->label,
+                'tag'     => $this->tag,
+                'options' => $this->options,
+            ] + $append);
+        } else {
+            $rule = null;
+        }
+        $success = $this->setting->set($name, $this->prepareValueParam($value), null, $rule);
         if ($success) {
             $this->stdout("Setting updated!\n", Console::FG_GREEN);
         } else {
             $this->stderr("Setting failed!\n", Console::FG_RED);
+            foreach ($this->setting->lastErrors as $attribute => $errors) {
+                foreach ($errors as $error) {
+                    $this->stderr(" - $attribute: $error\n", Console::FG_RED);
+                }
+            }
         }
     }
 
@@ -114,11 +165,23 @@ class SettingController extends Controller
         }
         $type = substr($value, 0, $pos);
         $value = substr($value, $pos + 1);
-        if ($type === 'json') {
-            return json_decode($value, true);
+        if ($type == 'string') {
+            return $value;
         }
-        settype($value, $type);
 
-        return $value;
+        switch ($type) {
+            case 'bool':
+            case 'boolean':
+            case 'int':
+            case 'integer':
+            case 'float':
+                settype($value, $type);
+
+                return $value;
+            case 'json':
+                return json_decode($value, true);
+                break;
+        }
+        throw new InvalidArgumentException("Undefined value type");
     }
 }

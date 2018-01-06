@@ -2,7 +2,7 @@
 
 namespace yiithings\setting;
 
-use yiithings\setting\models\Setting as Model;
+use yiithings\setting\models\SettingForm as Model;
 use Yii;
 use yii\base\Component;
 
@@ -82,7 +82,7 @@ class Setting extends Component
         $model->rule = $rule;
 
         if ( ! $model->save()) {
-            var_dump($model->getErrors());
+            $this->lastErrors = $model->getErrors();
             return false;
         }
 
@@ -130,21 +130,21 @@ class Setting extends Component
      * @param string $name
      * @param mixed  $value
      * @param string $group
-     * @param null   $rule
+     * @param mixed  $rule
      * @return bool
      * @throws \yii\base\InvalidConfigException
      */
     public function set($name, $value, $group = '', $rule = null)
     {
         if (false === ($model = $this->getModel($name, $group))) {
-            return $this->add($name, $value, $group, $rule);
+            return $this->add($name, $value, $group, $value, $rule);
         }
 
         $model->value = $value;
         $model->rule = $rule;
 
         if ( ! $model->save()) {
-            var_dump($model->getErrors());
+            $this->lastErrors = $model->getErrors();
             return false;
         }
 

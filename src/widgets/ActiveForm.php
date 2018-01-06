@@ -2,7 +2,7 @@
 
 namespace yiithings\setting\widgets;
 
-class GroupWidget
+class ActiveForm extends \yii\widgets\ActiveForm
 {
 
 }

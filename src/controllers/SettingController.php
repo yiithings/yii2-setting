@@ -2,7 +2,10 @@
 
 namespace yiithings\setting\controllers;
 
+use Yii;
 use yii\web\Controller;
+use yiithings\setting\models\MultiSettingForm;
+use yiithings\setting\models\SettingForm;
 
 /**
  * Manages application settings.
@@ -13,6 +16,20 @@ class SettingController extends Controller
 {
     public function actionIndex()
     {
-        return $this->render('index');
+        $model = new MultiSettingForm();
+        $model->settings = SettingForm::find()->all();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+        }
+
+        return $this->render('index', [
+            'model' => $model,
+        ]);
+    }
+
+    protected function find()
+    {
+
     }
 }

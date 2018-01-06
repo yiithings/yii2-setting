@@ -2,7 +2,9 @@
 
 namespace yiithings\setting\rules;
 
-class FileRule
+use yiithings\setting\Rule;
+
+class FileRule extends Rule
 {
 
 }
