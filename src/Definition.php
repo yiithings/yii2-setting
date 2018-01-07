@@ -22,6 +22,8 @@ class Definition extends Component implements DefinitionInterface
 {
     const EVENT_BEFORE_RENDER = 'beforeRender';
     const EVENT_AFTER_RENDER = 'afterRender';
+
+    public $activeAttributes = [];
     /**
      * @var array
      */
@@ -63,7 +65,7 @@ class Definition extends Component implements DefinitionInterface
     public function validate()
     {
         foreach ($this->getValidators() as $validator) {
-            $validator->validateAttributes($this->model, ['name', 'value']);
+            $validator->validateAttributes($this->model, $this->activeAttributes);
         }
 
         return ! $this->model->hasErrors();
@@ -213,7 +215,7 @@ class Definition extends Component implements DefinitionInterface
             if ($rule instanceof Validator) {
                 $validators->append($rule);
             } elseif (is_array($rule) && isset($rule[0])) { // attributes, validator type
-                $validator = Validator::createValidator($rule[0], $this->model, ['value'], array_slice($rule, 1));
+                $validator = Validator::createValidator($rule[0], $this->model, $this->activeAttributes, array_slice($rule, 1));
                 $validators->append($validator);
             } else {
                 throw new InvalidConfigException('Invalid validation rule: a rule must specify both attribute names and validator type.');
@@ -228,6 +230,6 @@ class Definition extends Component implements DefinitionInterface
      */
     public function __sleep()
     {
-        return array_diff(array_keys(get_object_vars($this)), ['model', '_validators', '_renderer']);
+        return array_diff(array_keys(get_object_vars($this)), ['model', '_validators', '_renderer', 'activeAttributes']);
     }
 }

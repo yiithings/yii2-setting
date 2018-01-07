@@ -89,6 +89,7 @@ class SettingForm extends Setting implements DefinableModel
             $this->definition_name = get_class($definition);
             $this->definition_data = serialize($definition);
             $this->_definition = $definition;
+            $this->_definition->activeAttributes = ['value', 'default_value'];
 
             return;
         }
