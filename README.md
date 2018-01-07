@@ -6,7 +6,11 @@ Yii2 Setting
 [![Latest Unstable Version](https://poser.pugx.org/yiithings/yii2-setting/v/unstable.svg)](https://packagist.org/packages/yiithings/yii2-setting)
 [![License](https://poser.pugx.org/yiithings/yii2-setting/license.svg)](https://packagist.org/packages/yiithings/yii2-setting)
 
-Site setting extension
+It helps you to dynamically construct, validate, and display setting variables in the Yii2 framework.
+
+What's This
+-----------
+
 
 Installation
 ------------
@@ -32,3 +36,6 @@ Usage
 -----
 
 Once the extension is installed, simply use it in your code by  :
+```php
+
+```

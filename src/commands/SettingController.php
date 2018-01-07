@@ -6,6 +6,8 @@ use InvalidArgumentException;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\Console;
+use yii\helpers\Inflector;
+use yiithings\setting\Definition;
 use yiithings\setting\Setting;
 
 /**
@@ -21,35 +23,31 @@ class SettingController extends Controller
      */
     public $settingComponent = 'setting';
     /**
-     * @var bool whether to set setting with rule.
+     * @var string definition class name.
      */
-    public $withRule = false;
+    public $class = '';
     /**
-     * @var string rule class name.
+     * @var string|array set definition rules from json input.
      */
-    public $class = 'yiithings\setting\Rule';
+    public $rules = [];
     /**
-     * @var string rule label name.
-     */
-    public $label;
-    /**
-     * @var string rule tag name.
-     */
-    public $tag;
-    /**
-     * @var array rule option attribute.
+     * @var string|array set definition options from json input.
      */
     public $options = [];
     /**
-     * @var string read json and append properties to rule.
+     * @var string definition label name.
      */
-    public $append;
+    public $label;
+    /**
+     * @var string definition tag name.
+     */
+    public $tag;
 
     public function options($actionID)
     {
         switch ($actionID) {
             case 'set':
-                $options = ['withRule', 'class', 'label', 'tag', 'options', 'append'];
+                $options = ['class', 'rules', 'options', 'label', 'tag'];
                 break;
             default:
                 $options = [];
@@ -108,17 +106,31 @@ class SettingController extends Controller
         if ( ! is_array($append)) {
             throw new InvalidArgumentException("Cannot parser append json: {$this->append}");
         }
-        if ($this->withRule) {
-            $rule = Yii::createObject([
+        if ( ! empty($this->class) || ! empty($this->rules) || ! empty($this->options)) {
+            if (empty($this->class)) {
+                $this->class = Definition::className();
+            } elseif ($this->class[0] == '@'){
+                $alias = 'yiithings\\setting\\definitions\\' . Inflector::classify(substr($this->class, 1));
+                if ( ! class_exists($alias)) {
+                    $this->stderr("Not found definition class alias: {$this->class}!\n", Console::FG_RED);
+                    return;
+                }
+                $this->class = $alias;
+            }
+            if ( ! class_exists($this->class)) {
+                $this->stderr("Not found definition class!\n", Console::FG_RED);
+                return;
+            }
+
+            $definition = Yii::createObject([
                 'class'   => $this->class,
-                'label'   => $this->label,
-                'tag'     => $this->tag,
-                'options' => $this->options,
-            ] + $append);
+                'rules'   => is_array($this->rules) ? $this->rules : json_decode($this->rules),
+                'options' => is_array($this->options) ? $this->options : json_decode($this->options),
+            ]);
         } else {
-            $rule = null;
+            $definition = null;
         }
-        $success = $this->setting->set($name, $this->prepareValueParam($value), null, $rule);
+        $success = $this->setting->set($name, $this->prepareValueParam($value), null, $definition);
         if ($success) {
             $this->stdout("Setting updated!\n", Console::FG_GREEN);
         } else {
@@ -158,6 +170,10 @@ class SettingController extends Controller
         return Yii::$app->{$this->settingComponent};
     }
 
+    /**
+     * @param string $value
+     * @return bool|mixed|string
+     */
     private function prepareValueParam($value)
     {
         if (false === ($pos = strpos($value, ':'))) {

@@ -14,8 +14,9 @@ $this->title = 'Settings';
 <?php $form = ActiveForm::begin([]); ?>
 <?php foreach ($model->fields() as $field): ?>
     <?php
-        $setting = $model->getSetting($field);
-        echo $setting->rule->renderForm($form, $field, $model);
+        /** @var \yiithings\setting\models\SettingForm $setting */
+        $setting = $model->getAttributeObject($field);
+        echo $setting->definition->render($model, $form, $field);
     ?>
 <?php endforeach ?>
 <?= Html::resetButton(Yii::t('yiithings/setting', 'Reset'), ['class' => 'btn btn-danger btn-flat']) ?>

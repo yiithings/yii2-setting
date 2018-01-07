@@ -2,6 +2,7 @@
 
 namespace yiithings\setting;
 
+use InvalidArgumentException;
 use yiithings\setting\models\SettingForm as Model;
 use Yii;
 use yii\base\Component;
@@ -65,24 +66,29 @@ class Setting extends Component
     }
 
     /**
-     * @param string $name
-     * @param mixed  $value
-     * @param string $group
-     * @param string $defaultValue
-     * @param null   $rule
+     * @param string     $name
+     * @param mixed      $value
+     * @param string     $group
+     * @param string     $defaultValue
+     * @param mixed      $definition
      * @return bool
+     * @throws \yii\base\InvalidConfigException
      */
-    public function add($name, $value, $group = '', $defaultValue = '', $rule = null)
+    public function add($name, $value, $group = '', $defaultValue = '', $definition = null)
     {
         $model = new Model();
         $model->name = $name;
         $model->group = $group;
         $model->value = $value;
         $model->defaultValue = $defaultValue;
-        $model->rule = $rule;
+        if ($definition) {
+            $this->prepareDefinition($definition);
+            $definition->bindTo($model);
+        }
 
         if ( ! $model->save()) {
             $this->lastErrors = $model->getErrors();
+
             return false;
         }
 
@@ -130,21 +136,25 @@ class Setting extends Component
      * @param string $name
      * @param mixed  $value
      * @param string $group
-     * @param mixed  $rule
+     * @param mixed  $definition
      * @return bool
      * @throws \yii\base\InvalidConfigException
      */
-    public function set($name, $value, $group = '', $rule = null)
+    public function set($name, $value, $group = '', $definition = null)
     {
         if (false === ($model = $this->getModel($name, $group))) {
-            return $this->add($name, $value, $group, $value, $rule);
+            return $this->add($name, $value, $group, $value, $definition);
         }
 
         $model->value = $value;
-        $model->rule = $rule;
+        if ($definition) {
+            $this->prepareDefinition($definition);
+            $definition->bindTo($model);
+        }
 
         if ( ! $model->save()) {
             $this->lastErrors = $model->getErrors();
+
             return false;
         }
 
@@ -249,5 +259,22 @@ class Setting extends Component
     protected function findWithoutAutoloaded()
     {
         return Model::find()->where(['autoload' => '0'])->all();
+    }
+
+    /**
+     * @param mixed $definition
+     * @return DefinitionInterface
+     * @throws \yii\base\InvalidConfigException
+     */
+    protected function prepareDefinition($definition)
+    {
+        if ( ! $definition instanceof DefinitionInterface) {
+            $definition = Yii::createObject($definition);
+            if ( ! $definition instanceof DefinitionInterface) {
+                throw new InvalidArgumentException("Invalid definition argument");
+            }
+        }
+
+        return $definition;
     }
 }

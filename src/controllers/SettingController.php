@@ -20,16 +20,13 @@ class SettingController extends Controller
         $model->settings = SettingForm::find()->all();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
+            return $this->render('index', [
+                'model' => $model,
+            ]);
         }
 
         return $this->render('index', [
             'model' => $model,
         ]);
-    }
-
-    protected function find()
-    {
-
     }
 }

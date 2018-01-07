@@ -2,24 +2,29 @@
 
 namespace yiithings\setting\models;
 
-use ArrayObject;
 use InvalidArgumentException;
 use Yii;
 use yii\base\InvalidConfigException;
-use yii\validators\Validator;
-use yiithings\setting\Rule;
+use yiithings\setting\AccessInterceptor;
+use yiithings\setting\DefinableModel;
+use yiithings\setting\Definition;
+use yiithings\setting\DefinitionInterface;
 
 /**
  * Class SettingForm
  *
  * @package yiithings\setting\models
- * @property mixed $value
- * @property mixed $defaultValue
- * @property Rule  $rule
+ * @property mixed      $value
+ * @property mixed      $defaultValue
+ * @property Definition $definition
  */
-class SettingForm extends Setting
+class SettingForm extends Setting implements DefinableModel
 {
-    protected $appendRules = false;
+    use AccessInterceptor;
+    /**
+     * @var Definition
+     */
+    private $_definition;
     /**
      * @var mixed
      */
@@ -28,11 +33,10 @@ class SettingForm extends Setting
      * @var mixed
      */
     private $_defaultValue;
-    /**
-     * @var Rule
-     */
-    private $_rule;
 
+    /**
+     * @return array
+     */
     public function behaviors()
     {
         return [
@@ -42,9 +46,76 @@ class SettingForm extends Setting
         ];
     }
 
-    public function validate($attributeNames = null, $clearErrors = true)
+    /**
+     * @return Definition|DefinitionInterface
+     * @throws InvalidConfigException
+     */
+    public function getDefinition()
     {
-        return parent::validate($attributeNames, $clearErrors) && $this->validateRule();
+        if ($this->_definition === null) {
+            if (empty($this->definition_name)) {
+                $definition = Yii::createObject([
+                    'class' => Definition::className(),
+                ]);
+            } elseif (empty($this->definition_data)) {
+                if ( ! class_exists($this->definition_name, true)) {
+                    throw new InvalidArgumentException("Invalid definition class name");
+                }
+                $definition = Yii::createObject([
+                    'class' => $this->definition_name,
+                ]);
+            } else {
+                $definition = unserialize($this->definition_data);
+                if ( ! is_object($definition)) {
+                    throw new InvalidArgumentException("Invalid serialize data of definition_data");
+                } elseif ( ! $definition instanceof Definition) {
+                    throw new InvalidArgumentException("The serialized object is not a valid instance of " . Definition::className());
+                }
+            }
+            /** @var Definition $definition */
+            $definition->bindTo($this);
+        }
+
+        return $this->_definition;
+    }
+
+    /**
+     * @param mixed $definition
+     * @throws InvalidConfigException
+     */
+    public function setDefinition($definition)
+    {
+        if (is_object($definition) && $definition instanceof Definition) {
+            $this->definition_name = get_class($definition);
+            $this->definition_data = serialize($definition);
+            $this->_definition = $definition;
+
+            return;
+        }
+
+        if (is_string($definition)) {
+            $definition = (array)$definition;
+        }
+        if (is_array($definition) && ! isset($definition['class'])) {
+            $definition['class'] = Definition::className();
+        }
+        $definition = Yii::createObject($definition);
+        if ( ! is_object($definition) || ! $definition instanceof Definition) {
+            throw new InvalidArgumentException("Invalid definition value");
+        }
+        $this->setDefinition($definition);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullName()
+    {
+        if ( ! ($group = $this->getGroup())) {
+            return $this->getName();
+        }
+
+        return $group . '.' . $this->getName();
     }
 
     /**
@@ -105,213 +176,60 @@ class SettingForm extends Setting
         $this->setAttribute('type', $type);
     }
 
+    /**
+     * @return mixed
+     * @throws InvalidConfigException
+     */
     public function getValue()
     {
         if ($this->_value === null) {
-            $this->_value = $this->getDataAttribute('data');
+            $this->_value = $this->getDefinition()->getAttribute('value');
         }
 
         return $this->_value;
     }
 
+    /**
+     * @param mixed $value
+     * @throws InvalidConfigException
+     */
     public function setValue($value)
     {
-        $this->setDataAttribute('data', $value);
-        $this->_value = $this->data;
+        $this->getDefinition()->setAttribute('value', $value);
+        $this->_value = $value;
     }
 
+    /**
+     * @return mixed
+     * @throws InvalidConfigException
+     */
     public function getDefaultValue()
     {
         if ($this->_defaultValue === null) {
-            $this->_defaultValue = $this->getDataAttribute('default_data');
+            $this->_defaultValue = $this->getDefinition()->getAttribute('default_value');
         }
 
         return $this->_defaultValue;
     }
 
+    /**
+     * @param mixed $value
+     * @throws InvalidConfigException
+     */
     public function setDefaultValue($value)
     {
-        if ($value === null) {
-            $this->default_data = null;
-
-            return;
-        }
-        $this->setDataAttribute('default_data', $value);
-        $this->_defaultValue = $this->default_data;
+        $this->getDefinition()->setAttribute('default_value', $value);
+        $this->_defaultValue = $value;
     }
 
     /**
-     * @return Rule
-     * @throws \yii\base\InvalidConfigException
+     * @param string $attributeNames
+     * @param bool   $clearErrors
+     * @return bool
+     * @throws InvalidConfigException
      */
-    public function getRule()
+    public function validate($attributeNames = null, $clearErrors = true)
     {
-        if ($this->_rule === null) {
-            if (empty($this->rule_name)) {
-                $this->_rule = Yii::createObject([
-                    'class' => 'yiithings\setting\Rule',
-                ]);
-            } else {
-                $this->_rule = unserialize($this->rule_data);
-            }
-        }
-        if ($this->_rule->isBind()) {
-            $this->_rule->bind($this);
-        }
-
-        return $this->_rule;
-    }
-
-    /**
-     * @param mixed $rule
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function setRule($rule)
-    {
-        if (empty($rule)) {
-            $this->_rule = null;
-            $this->rule_name = '';
-            $this->rule_data = '';
-
-            return;
-        }
-
-        if (is_string($rule)) {
-            $rule = (array)$rule;
-        }
-        if (is_array($rule)) {
-            if ( ! isset($rule['class'])) {
-                $rule['class'] = 'yiithings\setting\Rule';
-            }
-            $rule = Yii::createObject($rule);
-        }
-        if ( ! is_object($rule) || ! $rule instanceof Rule) {
-            throw new InvalidArgumentException();
-        }
-        $this->_rule = $rule;
-        $this->rule_name = get_class($rule);
-        $this->rule_data = serialize($rule);
-    }
-
-    /**
-     * @param ArrayObject $validators
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function appendRuleValidators($validators)
-    {
-        foreach ($this->getRule()->rules() as $rule) {
-            if ($rule instanceof Validator) {
-                $validators->append($rule);
-            } elseif (is_array($rule) && isset($rule[0])) { // attributes, validator type
-                $validator = Validator::createValidator($rule[0], $this, ['value'], array_slice($rule, 1));
-                $validators->append($validator);
-            } else {
-                throw new InvalidConfigException('Invalid validation rule: a rule must specify both attribute names and validator type.');
-            }
-        }
-    }
-
-    public function getValidators()
-    {
-        $validators = parent::getValidators();
-        if ($this->appendRules === false) {
-            $this->appendRuleValidators($validators);
-            $this->appendRules = true;
-        }
-
-        return $validators;
-    }
-
-    public function __get($name)
-    {
-        $getter = 'get' . $name;
-        if (method_exists($this, $getter)) {
-            return $this->$getter();
-        }
-
-        return parent::__get($name);
-    }
-
-    public function __set($name, $value)
-    {
-        $setter = 'set' . $name;
-        if (method_exists($this, $setter)) {
-            $this->$setter($value);
-
-            return;
-        }
-        parent::__set($name, $value);
-    }
-
-    public function __unset($name)
-    {
-        $setter = 'set' . $name;
-        if (method_exists($this, $setter)) {
-            $this->$setter(null);
-            return;
-        }
-        parent::__unset($name);
-    }
-
-    protected function getDataAttribute($attribute)
-    {
-        switch ($this->type) {
-            case 'bool':
-            case 'boolean':
-            case 'int':
-            case 'integer':
-            case 'float':
-                $value = $this->$attribute;
-                settype($value, $this->type);
-
-                return $value;
-            case 'string':
-                return $this->$attribute;
-            case 'json':
-                return json_decode($this->$attribute, true);
-                break;
-            default:
-                throw new InvalidArgumentException("Undefined value type");
-        }
-    }
-
-    /**
-     * @param string $attribute
-     * @param mixed  $value
-     */
-    protected function setDataAttribute($attribute, $value)
-    {
-        if ( ! ($type = $this->type)) {
-            $type = gettype($value);
-        }
-        switch ($type) {
-            case 'bool':
-            case 'boolean':
-                $this->type = 'bool';
-                $this->$attribute = $value ? '1' : '0';
-                break;
-            case 'int':
-            case 'integer':
-                $this->type = 'int';
-                $this->$attribute = (int)$value;
-                break;
-            case 'float':
-            case 'string':
-                $this->$attribute = (string)$value;
-                $this->type = gettype($value);
-                break;
-            case 'array':
-            case 'json':
-                $this->type = 'json';
-                $this->$attribute = json_encode($value);
-                break;
-            default:
-                throw new InvalidArgumentException("Undefined value type");
-        }
-    }
-
-    protected function validateRule()
-    {
-        return $this->getRule()->validate($this);
+        return parent::validate($attributeNames, $clearErrors) && $this->getDefinition()->validate();
     }
 }

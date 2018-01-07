@@ -1,10 +1,10 @@
 <?php
 
-namespace yiithings\setting\rules;
+namespace yiithings\setting\definitions;
 
-use yiithings\setting\Rule;
+use yiithings\setting\Definition;
 
-class UrlRule extends Rule
+class Url extends Definition
 {
     public function rules()
     {

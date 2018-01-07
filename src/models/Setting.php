@@ -11,10 +11,11 @@ use Yii;
  * @property string $name
  * @property string $group
  * @property string $type
- * @property string $data
- * @property string $default_data
- * @property string $rule_name
- * @property resource $rule_data
+ * @property string $description
+ * @property string $value
+ * @property string $default_value
+ * @property string $definition_name
+ * @property resource $definition_data
  * @property int $sort_order
  * @property int $autoload
  * @property int $created_at
@@ -36,11 +37,11 @@ class Setting extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['data', 'default_data', 'rule_data'], 'string'],
+            [['value', 'default_value', 'definition_data'], 'string'],
             [['sort_order', 'autoload', 'created_at', 'updated_at'], 'integer'],
-            [['name', 'rule_name'], 'string', 'max' => 255],
+            [['name', 'description', 'definition_name'], 'string', 'max' => 255],
             [['group', 'type'], 'string', 'max' => 32],
-            [['name', 'group'], 'unique', 'targetAttribute' => ['name', 'group']],
+            [['name'], 'unique'],
         ];
     }
 
@@ -54,10 +55,11 @@ class Setting extends \yii\db\ActiveRecord
             'name' => Yii::t('yiithings/setting', 'Name'),
             'group' => Yii::t('yiithings/setting', 'Group'),
             'type' => Yii::t('yiithings/setting', 'Type'),
-            'data' => Yii::t('yiithings/setting', 'Data'),
-            'default_data' => Yii::t('yiithings/setting', 'Default Data'),
-            'rule_name' => Yii::t('yiithings/setting', 'Rule Name'),
-            'rule_data' => Yii::t('yiithings/setting', 'Rule Data'),
+            'description' => Yii::t('yiithings/setting', 'Description'),
+            'value' => Yii::t('yiithings/setting', 'Value'),
+            'default_value' => Yii::t('yiithings/setting', 'Default Value'),
+            'definition_name' => Yii::t('yiithings/setting', 'Definition Name'),
+            'definition_data' => Yii::t('yiithings/setting', 'Definition Data'),
             'sort_order' => Yii::t('yiithings/setting', 'Sort Order'),
             'autoload' => Yii::t('yiithings/setting', 'Autoload'),
             'created_at' => Yii::t('yiithings/setting', 'Created At'),
