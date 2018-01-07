@@ -63,7 +63,7 @@ class Definition extends Component implements DefinitionInterface
     public function validate()
     {
         foreach ($this->getValidators() as $validator) {
-            $validator->validateAttributes($this->model, $this->model->getAttributes(['name', 'value']));
+            $validator->validateAttributes($this->model, ['name', 'value']);
         }
 
         return ! $this->model->hasErrors();
