@@ -6,9 +6,9 @@ use ArrayObject;
 use InvalidArgumentException;
 use Yii;
 use yii\base\Component;
-use yii\base\Event;
 use yii\base\InvalidConfigException;
 use yii\base\Model;
+use yii\base\ModelEvent;
 use yii\db\ActiveRecord;
 use yii\validators\Validator;
 
@@ -73,7 +73,7 @@ class Definition extends Component implements DefinitionInterface
     {
         $this->getRenderer()->prepare(func_get_args());
 
-        if (false !== $this->beforeRender()) {
+        if (false === $this->beforeRender()) {
             return false;
         }
         $content = $this->getRenderer()->execute($this->model);
@@ -84,8 +84,10 @@ class Definition extends Component implements DefinitionInterface
 
     public function beforeRender()
     {
-        $event = new Event();
+        $event = new ModelEvent();
         $this->trigger(self::EVENT_BEFORE_RENDER, $event);
+
+        return $event->isValid;
     }
 
     public function afterRender()
