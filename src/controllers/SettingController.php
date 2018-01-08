@@ -6,6 +6,7 @@ use Yii;
 use yii\web\Controller;
 use yiithings\setting\models\MultiSettingForm;
 use yiithings\setting\models\SettingForm;
+use yiithings\setting\widgets\AlertMessage;
 
 /**
  * Manages application settings.
@@ -20,9 +21,8 @@ class SettingController extends Controller
         $model->settings = SettingForm::find()->all();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->render('index', [
-                'model' => $model,
-            ]);
+            Yii::$app->session->addFlash('alerts',
+                AlertMessage::message(Yii::t('yiithings/setting', 'Settings has been saved!'), AlertMessage::SUCCESS));
         }
 
         return $this->render('index', [
