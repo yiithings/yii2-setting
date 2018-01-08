@@ -167,6 +167,34 @@ class Setting extends Component
     }
 
     /**
+     * Rename a setting name and group.
+     *
+     * @param string $name
+     * @param string $group
+     * @param string $newName
+     * @param string $newGroup
+     * @return bool
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function rename($name, $group, $newName, $newGroup = null)
+    {
+        if (false === ($model = $this->getModel($name, $group))) {
+            return false;
+        }
+        $model->name = $newName;
+        if ($newGroup !== null) {
+            $model->group = $newGroup;
+        }
+        if ( ! $model->save()) {
+            $this->lastErrors = $model->getErrors();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Reset a setting.
      *
      * @param string $name
@@ -180,11 +208,11 @@ class Setting extends Component
      */
     public function reset(
         $name,
-        $group = '',
-        $defaultValue = '',
+        $group,
+        $defaultValue,
         $definition = null,
-        $sortOrder = 50,
-        $autoload = false
+        $sortOrder = null,
+        $autoload = null
     ) {
         if (false === ($model = $this->getModel($name, $group))) {
             return false;
