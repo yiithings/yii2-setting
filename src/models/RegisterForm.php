@@ -24,11 +24,15 @@ class RegisterForm extends Model
 
     public $definitionOptions;
 
+    public $sortOrder;
+
+    public $autoload;
+
     public function rules()
     {
         return [
             [['value', 'defaultValue',], 'string'],
-            [['sort_order', 'autoload'], 'integer'],
+            [['sortOrder', 'autoload'], 'integer'],
             [['name', 'description', 'definitionClass'], 'string', 'max' => 255],
             [['group', 'type'], 'string', 'max' => 32],
             [['name'], 'required'],
@@ -51,6 +55,7 @@ class RegisterForm extends Model
         $setting = Yii::$app->{$this->settingComponent};
         $definition = $definitionOption + ['class' => $this->definitionClass,];
 
-        return $setting->add($this->name, $this->value, $this->group, $this->defaultValue, $definition);
+        return $setting->add($this->name, $this->value, $this->group, $this->defaultValue, $definition,
+            $this->sortOrder, $this->autoload);
     }
 }
