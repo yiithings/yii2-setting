@@ -66,12 +66,13 @@ class Setting extends Component
     }
 
     /**
-     * @param string     $name
-     * @param mixed      $value
-     * @param string     $group
-     * @param string     $defaultValue
-     * @param mixed      $definition
+     * @param string $name
+     * @param mixed  $value
+     * @param string $group
+     * @param string $defaultValue
+     * @param mixed  $definition
      * @return bool
+     * @throws \yii\base\InvalidConfigException
      */
     public function add($name, $value, $group = '', $defaultValue = '', $definition = null)
     {
