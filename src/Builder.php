@@ -70,7 +70,7 @@ class Builder extends Component
             $model->group = $this->_group;
             $model->value = $this->_value;
             $model->defaultValue = $this->_defaultValue;
-            $model->sort_order = $this->_sortOrder;
+            $model->sort_order = empty($this->_sortOrder) && $this->_sortOrder !== 0 ? 50 : $this->_sortOrder;
             $model->autoload = $this->_autoload ? '1' : '0';
             if ($this->_definition) {
                 $this->_definition->bindTo($model);
