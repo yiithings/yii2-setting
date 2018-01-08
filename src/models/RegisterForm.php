@@ -46,7 +46,7 @@ class RegisterForm extends Model
         if ( ! empty($this->definitionOptions)) {
             $definitionOption = json_decode($this->definitionOptions, true);
         } else {
-            $definitionOption = (array)$this->definitionOptions;
+            $definitionOption = [];
         }
         if (empty($this->definitionClass)) {
             $this->definitionClass = Definition::className();
