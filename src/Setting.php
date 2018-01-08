@@ -2,7 +2,6 @@
 
 namespace yiithings\setting;
 
-use InvalidArgumentException;
 use yiithings\setting\models\SettingForm as Model;
 use Yii;
 use yii\base\Component;
@@ -66,25 +65,36 @@ class Setting extends Component
     }
 
     /**
+     * Register a setting.
+     *
      * @param string $name
      * @param mixed  $value
      * @param string $group
      * @param string $defaultValue
      * @param mixed  $definition
+     * @param int    $sortOrder
+     * @param bool   $autoload
      * @return bool
      * @throws \yii\base\InvalidConfigException
      */
-    public function add($name, $value, $group = '', $defaultValue = '', $definition = null)
-    {
-        $model = new Model();
-        $model->name = $name;
-        $model->group = $group;
-        $model->value = $value;
-        $model->defaultValue = $defaultValue;
-        if ($definition) {
-            $definition = $this->prepareDefinition($definition);
-            $definition->bindTo($model);
-        }
+    public function add(
+        $name,
+        $value,
+        $group = '',
+        $defaultValue = '',
+        $definition = null,
+        $sortOrder = 50,
+        $autoload = false
+    ) {
+        $builder = new Builder();
+        $builder->setName($name)
+            ->setGroup($group)
+            ->setValue($value)
+            ->setDefaultValue($defaultValue)
+            ->setDefinition($definition)
+            ->setSortOrder($sortOrder)
+            ->setAutoload($autoload);
+        $model = $builder->build();
 
         if ( ! $model->save()) {
             $this->lastErrors = $model->getErrors();
@@ -136,21 +146,56 @@ class Setting extends Component
      * @param string $name
      * @param mixed  $value
      * @param string $group
-     * @param mixed  $definition
      * @return bool
      * @throws \yii\base\InvalidConfigException
      */
-    public function set($name, $value, $group = '', $definition = null)
+    public function set($name, $value, $group = '')
     {
         if (false === ($model = $this->getModel($name, $group))) {
-            return $this->add($name, $value, $group, $value, $definition);
+            return $this->add($name, $value, $group, $value);
         }
 
         $model->value = $value;
-        if ($definition) {
-            $this->prepareDefinition($definition);
-            $definition->bindTo($model);
+
+        if ( ! $model->save()) {
+            $this->lastErrors = $model->getErrors();
+
+            return false;
         }
+
+        return true;
+    }
+
+    /**
+     * Reset a setting.
+     *
+     * @param string $name
+     * @param string $group
+     * @param string $defaultValue
+     * @param mixed  $definition
+     * @param int    $sortOrder
+     * @param bool   $autoload
+     * @return bool
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function reset(
+        $name,
+        $group = '',
+        $defaultValue = '',
+        $definition = null,
+        $sortOrder = 50,
+        $autoload = false
+    ) {
+        if (false === ($model = $this->getModel($name, $group))) {
+            return false;
+        }
+
+        $builder = new Builder();
+        $builder->setDefaultValue($defaultValue)
+            ->setDefinition($definition)
+            ->setSortOrder($sortOrder)
+            ->setAutoload($autoload);
+        $builder->build($model);
 
         if ( ! $model->save()) {
             $this->lastErrors = $model->getErrors();
@@ -259,22 +304,5 @@ class Setting extends Component
     protected function findWithoutAutoloaded()
     {
         return Model::find()->where(['autoload' => '0'])->all();
-    }
-
-    /**
-     * @param mixed $definition
-     * @return DefinitionInterface
-     * @throws \yii\base\InvalidConfigException
-     */
-    protected function prepareDefinition($definition)
-    {
-        if ( ! $definition instanceof DefinitionInterface) {
-            $definition = Yii::createObject($definition);
-            if ( ! $definition instanceof DefinitionInterface) {
-                throw new InvalidArgumentException("Invalid definition argument");
-            }
-        }
-
-        return $definition;
     }
 }
