@@ -72,7 +72,6 @@ class Setting extends Component
      * @param string     $defaultValue
      * @param mixed      $definition
      * @return bool
-     * @throws \yii\base\InvalidConfigException
      */
     public function add($name, $value, $group = '', $defaultValue = '', $definition = null)
     {
@@ -82,7 +81,7 @@ class Setting extends Component
         $model->value = $value;
         $model->defaultValue = $defaultValue;
         if ($definition) {
-            $this->prepareDefinition($definition);
+            $definition = $this->prepareDefinition($definition);
             $definition->bindTo($model);
         }
 

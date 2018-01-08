@@ -172,7 +172,7 @@ $bundle = yiister\gentelella\assets\Asset::register($this);
                                 <li><a href="javascript:;">  Profile</a>
                                 </li>
                                 <li>
-                                    <a href="javascript:;">
+                                    <a href="<?= \yii\helpers\Url::to(['/settings']) ?>">
                                         <span class="badge bg-red pull-right">50%</span>
                                         <span>Settings</span>
                                     </a>

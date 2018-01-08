@@ -28,7 +28,8 @@
         }
     },
     "require-dev": {
+        "yiisoft/yii2-gii": "^2.0",
         "yiister/yii2-gentelella": "^1.3",
-        "yiisoft/yii2-gii": "^2.0"
+        "dmstr/yii2-adminlte-asset": "^2.6"
     }
 }

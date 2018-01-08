@@ -26,9 +26,17 @@ class Renderer extends Component
      */
     public $options = [];
     /**
+     * @var array
+     */
+    public $labelOptions = [];
+    /**
      * @var callable
      */
     public $fieldCallback;
+    /**
+     * @var string
+     */
+    public $fieldTemplate;
     /**
      * @var Model
      */
@@ -48,12 +56,20 @@ class Renderer extends Component
     public function prepare($params)
     {
         if (count($params) == 2) {
-            $this->form = $params[0];
-            $this->field = $params[1];
+            list($this->form, $this->field) = $params;
         } elseif (count($params) == 3) {
-            $this->renderModel = $params[0];
-            $this->form = $params[1];
-            $this->field = $params[2];
+            list($this->renderModel, $this->form, $this->field) = $params;
+        } elseif (count($params) == 4) {
+            list($this->renderModel, $this->form, $this->field, $options) = $params;
+            if (isset($options['labelOptions'])) {
+                $this->labelOptions = $options['labelOptions'];
+                unset($options['labelOptions']);
+            }
+            if (isset($options['fieldTemplate'])) {
+                $this->fieldTemplate = $options['fieldTemplate'];
+                unset($options['fieldTemplate']);
+            }
+            $this->options = $options;
         }
     }
 
@@ -87,11 +103,14 @@ class Renderer extends Component
                 return false;
             }
         }
+        if ($this->fieldTemplate) {
+            $fieldObject->template = $this->fieldTemplate;
+        }
 
         if ($this->tag == 'textarea') {
-            $fieldObject->textarea($this->options)->label($this->label);
+            $fieldObject->textarea($this->options)->label($this->label, $this->labelOptions);
         } elseif ($model->type == 'string') {
-            $fieldObject->input('text', $this->options)->label($this->label);
+            $fieldObject->input('text', $this->options)->label($this->label, $this->labelOptions);
         } elseif ($model->type == 'bool') {
             $fieldObject->checkbox([
                 'label' => $this->label !== null ? $this->label : $field,

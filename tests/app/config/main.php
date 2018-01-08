@@ -19,7 +19,8 @@ $config = [
     ],
     'modules' => [
         'settings' => [
-            'class' => 'yiithings\setting\Module'
+            'class' => 'yiithings\setting\Module',
+            'theme' => 'gentelella',
         ]
     ],
 ];

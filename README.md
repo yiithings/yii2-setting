@@ -8,6 +8,8 @@ Yii2 Setting
 
 It helps you to dynamically construct, validate, and display setting variables in the Yii2 framework.
 
+Supports `Bootstrap`(default), `AdminLTE` and `Gentelella Alela!`.
+
 What's This
 -----------
 
