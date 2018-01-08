@@ -39,9 +39,9 @@ to the require section of your `composer.json` file.
 Usage
 -----
 
-本拓展分为包含 `yiithings\setting\Setting` 组件和 `yiithings\setting\Module` 模块，`yiithings\setting\Setting` 组件是必须配置
-的，是对配置项进行 CRUD 的统一入口。`yiithings\setting\Module` 模块提供了 Web 端与控制台功能，会设置一些所需属性，是可选的。通常，
-我们将组件 ID 设置为 `setting`，将模块 ID 设置为 `settings`。
+拓展分为包含 `yiithings\setting\Setting` 组件和 `yiithings\setting\Module` 模块，`yiithings\setting\Setting` 组件是必须的，
+是对配置项进行 CRUD 的统一入口。`yiithings\setting\Module` 模块是可选的，提供了 Web 端配置页面与控制台命令行，并会设置一些所需属性。
+通常，我们将组件 ID 设置为 `setting`，将模块 ID 设置为 `settings`。
 
 Once the extension is installed, simply use it in your code by  :
 ```php
@@ -59,8 +59,9 @@ Once the extension is installed, simply use it in your code by  :
 
  > 组件 API 参见 [Setting Class](src/Setting.php)
 
-模块页面对 `AdminLTE` 和 `Gentelella Alela!` 两种主题提供了主题化定制（默认为`Bootstrap`）。如果你的应用使用了这两种主题重的一个，
+模块页面对 `AdminLTE` 和 `Gentelella Alela!` 两种主题提供了主题化定制（默认为`Bootstrap`）。如果你的应用使用了这两种主题中的一个，
 可以通过配置 `theme` 属性来设置主题。
+
 ```php
 'modules' => [
     'settings' => [
@@ -70,8 +71,9 @@ Once the extension is installed, simply use it in your code by  :
 ],
 ```
 
-模块使用了 I18N 组件，并且预置了一些语言消息的翻译，以示图提供适用更多场景。如果预置翻译没有你所需要的语言或不能满足要求，可自行添加翻译，
-拓展使用了 `yiithings/setting` 作为消息分类名。
+模块使用了 I18N 组件并且预置了一些语言的翻译。如果预置翻译没有你所需要的语言或不能满足要求，可自行添加翻译。拓展使用了
+`yiithings/setting` 作为消息分类名。
+
 ```php
 [
     'i18n' => [
