@@ -8,26 +8,50 @@ use yiithings\setting\Definition;
 
 class RegisterForm extends Model
 {
+    /**
+     * @var string
+     */
     public $settingComponent = 'setting';
-
+    /**
+     * @var string
+     */
     public $name;
-
+    /**
+     * @var string
+     */
     public $group;
-
+    /**
+     * @var string
+     */
     public $description;
-
+    /**
+     * @var mixed
+     */
     public $value;
-
+    /**
+     * @var mixed
+     */
     public $defaultValue;
-
+    /**
+     * @var string
+     */
     public $definitionClass;
-
+    /**
+     * @var array|string
+     */
     public $definitionOptions;
-
+    /**
+     * @var int
+     */
     public $sortOrder;
-
+    /**
+     * @var bool
+     */
     public $autoload;
 
+    /**
+     * @return array
+     */
     public function rules()
     {
         return [
@@ -41,6 +65,30 @@ class RegisterForm extends Model
         ];
     }
 
+    /**
+     * @return array
+     */
+    public function attributeLabels()
+    {
+        return [
+            'name'              => Yii::t('yiithings/setting', 'Name'),
+            'group'             => Yii::t('yiithings/setting', 'Group'),
+            'value'             => Yii::t('yiithings/setting', 'Value'),
+            'defaultValue'      => Yii::t('yiithings/setting', 'Default Value'),
+            'description'       => Yii::t('yiithings/setting', 'Description'),
+            'definitionClass'   => Yii::t('yiithings/setting', 'Definition Class'),
+            'definitionOptions' => Yii::t('yiithings/setting', 'Definition Options'),
+            'sortOrder'         => Yii::t('yiithings/setting', 'Sort Order'),
+            'autoload'          => Yii::t('yiithings/setting', 'Autoload'),
+        ];
+    }
+
+    /**
+     * Save fields to setting.
+     *
+     * @return bool
+     * @throws \yii\base\InvalidConfigException
+     */
     public function save()
     {
         if ( ! empty($this->definitionOptions)) {
