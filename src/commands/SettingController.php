@@ -46,7 +46,7 @@ class SettingController extends Controller
     public function options($actionID)
     {
         switch ($actionID) {
-            case 'set':
+            case 'add':
                 $options = ['class', 'rules', 'options', 'label', 'tag'];
                 break;
             default:
@@ -81,7 +81,7 @@ class SettingController extends Controller
     }
 
     /**
-     * Get a setting value
+     * Get a setting value.
      *
      * @param string $name
      * @throws \yii\base\InvalidConfigException
@@ -94,18 +94,14 @@ class SettingController extends Controller
     }
 
     /**
-     * Set a setting.
+     * Register a setting.
      *
      * @param string $name
-     * @param string $value value string use [type]:value set type.
+     * @param $value
      * @throws \yii\base\InvalidConfigException
      */
-    public function actionSet($name, $value)
+    public function actionAdd($name, $value)
     {
-        $append = ! empty($this->append) ? json_decode($this->append, true) : [];
-        if ( ! is_array($append)) {
-            throw new InvalidArgumentException("Cannot parser append json: {$this->append}");
-        }
         if ( ! empty($this->class) || ! empty($this->rules) || ! empty($this->options)) {
             if (empty($this->class)) {
                 $this->class = Definition::className();
@@ -130,7 +126,34 @@ class SettingController extends Controller
         } else {
             $definition = null;
         }
-        $success = $this->setting->set($name, $this->prepareValueParam($value), null, $definition);
+
+        list($name, $group) = $this->prepareNameParam($name);
+        list($value, $defaultValue) = $this->prepareValueParam($value);
+        $success = $this->setting->add($name, $value, $group,  $defaultValue, $definition);
+        if ($success) {
+            $this->stdout("Setting added!\n", Console::FG_GREEN);
+        } else {
+            $this->stderr("Setting add failed!\n", Console::FG_RED);
+            foreach ($this->setting->lastErrors as $attribute => $errors) {
+                foreach ($errors as $error) {
+                    $this->stderr(" - $attribute: $error\n", Console::FG_RED);
+                }
+            }
+        }
+    }
+
+    /**
+     * Set a setting or use default definition class register.
+     *
+     * @param string $name
+     * @param string $value value string use [type]:value set type.
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function actionSet($name, $value)
+    {
+        list($name, $group) = $this->prepareNameParam($name);
+        list($value, ) = $this->prepareValueParam($value);
+        $success = $this->setting->set($name, $value, $group);
         if ($success) {
             $this->stdout("Setting updated!\n", Console::FG_GREEN);
         } else {
@@ -171,17 +194,56 @@ class SettingController extends Controller
     }
 
     /**
+     * Returns a array with setting name and group by command param.
+     *
+     * e.g. site.language to ['site', 'language'], site_name to ['site_name', '']
+     *
+     * @param string $name
+     * @return array
+     */
+    private function prepareNameParam($name)
+    {
+        if (false === ($pos = strpos($name, '.'))) {
+            return [$name, ''];
+        }
+
+        return [substr($name, $pos + 1), substr($name, 0, $pos)];
+    }
+
+    /**
+     * Returns a array with setting value and default value by command param.
+     *
+     * e.g. 1000:1 to ['1000', '1'], 1000:1:int to [1000, 1].
+     *
      * @param string $value
      * @return bool|mixed|string
      */
     private function prepareValueParam($value)
     {
         if (false === ($pos = strpos($value, ':'))) {
-            return $value;
+            return [$value, null];
         }
-        $type = substr($value, 0, $pos);
-        $value = substr($value, $pos + 1);
-        if ($type == 'string') {
+        $defaultValue = substr($value, $pos + 1);
+        $value = substr($value, 0, $pos);
+        if (false === ($pos = strrpos($defaultValue, ':'))) {
+            return [$value, $defaultValue];
+        }
+        $type = substr($defaultValue, $pos + 1);
+        $defaultValue = substr($defaultValue, 0, $pos);
+
+        return [$value, $this->prepareValue($type, $defaultValue)];
+    }
+
+    /**
+     * Set a value type by type param.
+     *
+     * @param string $type
+     * @param mixed $value
+     * @return mixed
+     */
+    private function prepareValue($type, $value)
+    {
+        if ($type === null || $type == 'string') {
             return $value;
         }
 
@@ -198,6 +260,7 @@ class SettingController extends Controller
                 return json_decode($value, true);
                 break;
         }
+
         throw new InvalidArgumentException("Undefined value type");
     }
 }
