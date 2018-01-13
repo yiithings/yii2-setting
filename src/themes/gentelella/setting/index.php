@@ -95,7 +95,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => Url::current
                 <div class="clearfix"></div>
                 <div class="x_content">
                     <p></p>
-                    <a class="btn btn-app" href="<?= Url::to(['register/index']) ?>">
+                    <a class="btn btn-app" href="<?= Url::to(['register/']) ?>">
                         <i class="fa fa-plus"></i> <?= Yii::t('yiithings/setting', 'Register') ?>
                     </a>
                 </div>

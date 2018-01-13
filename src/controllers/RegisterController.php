@@ -16,7 +16,7 @@ class RegisterController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->addFlash('alerts',
                 AlertMessage::message(Yii::t('yiithings/setting', 'Settings has been saved!'), AlertMessage::SUCCESS));
-            $this->redirect(['setting/index']);
+            $this->redirect(['setting/']);
         }
 
         return $this->render('index', [
