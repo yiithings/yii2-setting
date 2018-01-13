@@ -41,7 +41,6 @@ class Setting extends \yii\db\ActiveRecord
             [['sort_order', 'autoload', 'created_at', 'updated_at'], 'integer'],
             [['name', 'description', 'definition_name'], 'string', 'max' => 255],
             [['group', 'type'], 'string', 'max' => 32],
-            [['name'], 'unique'],
         ];
     }
 
